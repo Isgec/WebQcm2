@@ -28,9 +28,7 @@ Namespace SIS.QCMCT
             Dim tmpX As String = Cmd.ExecuteScalar
             Try
               Select Case tmpX
-                Case "1" 'Boughtout
-                  mRet = False
-                Case "3" 'Package
+                Case "1", "3" '1=>Boughtout, 3=>Package
                   mRet = False
                 Case "4" 'Self Engineered
                   mRet = True
@@ -67,7 +65,7 @@ Namespace SIS.QCMCT
     End Property
     Public Function GetColor() As System.Drawing.Color
       Dim mRet As System.Drawing.Color = Drawing.Color.Red
-      If Convert.ToDecimal(PercentOfQuantity) > 0 Then
+      If Convert.ToDecimal(ProgressPercent) > 0 Then
         mRet = Drawing.Color.Green
       End If
       Return mRet
@@ -158,20 +156,24 @@ Namespace SIS.QCMCT
       Dim Results As List(Of SIS.QCMCT.qcmctRequest) = Nothing
       'CT_INSPECTIONCALLRAISED
       Dim Sql As String = ""
-      Sql &= " select distinct "
-      Sql &= " dm4.t_pcod As Product, "
-      Sql &= " tp3.t_sub2 As Activity2Desc, "
-      Sql &= "  tp3.t_sub3 As Activity3Desc, "
-      Sql &= "  tp3.t_sub4 As Activity4Desc, "
-      Sql &= "  dm4.t_iref As ItemReference, "
-      Sql &= "  dm2.t_sitm As ActivityID, "
-      Sql &= "  sum(td2.t_wght)  As IrefWeight   "
-      Sql &= " from ttdisg002200 as td2 "
-      Sql &= " inner join tdmisg002200 as dm2 on td2.t_docn = dm2.t_docn and td2.t_revi = dm2.t_revn and td2.t_item = dm2.t_item "
-      Sql &= " inner join tdmisg140200 as dm4 on dm2.t_docn = dm4.t_docn "
-      Sql &= " left outer join ttpisg243200 as tp3 on dm4.t_iref = tp3.t_iref and dm2.t_sitm = tp3.t_sitm and dm4.t_pcod = tp3.t_cprd "
+
+      Sql &= " select distinct    "
+      Sql &= " tp2.t_pcod As Product,    "
+      Sql &= " tp3.t_sub2 As Activity2Desc,    "
+      Sql &= " tp3.t_sub3 As Activity3Desc,    "
+      Sql &= " tp3.t_sub4 As Activity4Desc,    "
+      Sql &= " tp2.t_sub1 As ItemReference,    "
+      Sql &= " tp2.t_sitm As ActivityID,    "
+      Sql &= " sum(td2.t_wght)  As IrefWeight      "
+      Sql &= " from ttdisg002200 as td2    "
+      Sql &= " inner join tdmisg002200 as dm2 on td2.t_docn = dm2.t_docn and td2.t_revi = dm2.t_revn and td2.t_item = dm2.t_item    "
+      Sql &= " inner join tdmisg140200 as dm4 on td2.t_docn = dm4.t_docn    "
+      Sql &= " inner join ttpisg220200 as tp2 on dm4.t_iref = tp2.t_sub1 and dm4.t_cprj = tp2.t_cprj and tp2.t_sitm = case when dm2.t_sitm = '' then tp2.t_sitm else  dm2.t_sitm end  "
+      Sql &= " left outer join ttpisg243200 as tp3 on tp2.t_sub1 = tp3.t_iref and tp2.t_sitm = tp3.t_sitm and tp2.t_pcod = tp3.t_cprd    "
       Sql &= " where td2.t_orno = '" & OrNo & "'"
-      Sql &= " group by dm4.t_pcod,tp3.t_sub2, tp3.t_sub3,tp3.t_sub4, dm4.t_iref, dm2.t_sitm"
+      Sql &= "   and tp2.t_bohd = '" & Handle & "'"
+      Sql &= " group by tp2.t_pcod,tp3.t_sub2, tp3.t_sub3,tp3.t_sub4, tp2.t_sub1, tp2.t_sitm  "
+
       Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
         Using Cmd As SqlCommand = Con.CreateCommand()
           Cmd.CommandType = CommandType.Text
@@ -202,12 +204,12 @@ Namespace SIS.QCMCT
         .InspectionStageiD = Record.InspectionStageiD
         If Record.ProgressPercent = "" Then Record.ProgressPercent = "0.0000"
         If Record.ProgressWeight = "" Then Record.ProgressWeight = "0.0000"
-        If Convert.ToDecimal(Record.ProgressPercent) > 0 Then
+        If _Rec.RowProgressPercent Then
           .ProgressWeight = _Rec.IrefWeight * Record.ProgressPercent * 0.01
           .ProgressPercent = Record.ProgressPercent
         Else
           Try
-            .ProgressPercent = ((Record.ProgressWeight) / _Rec.IrefWeight) * 100
+            .ProgressPercent = (Convert.ToDecimal(Record.ProgressWeight) / Convert.ToDecimal(_Rec.IrefWeight)) * 100
           Catch ex As Exception
             .ProgressPercent = "0.0000"
           End Try

@@ -92,7 +92,7 @@
       <tr><td colspan="4" style="border-top: solid 1pt LightGrey" ></td></tr>
       <tr>
         <td class="alignright">
-          <b><asp:Label ID="Label1" runat="server" ForeColor="#CC6633" Text="Iref. Weight [Kg] :" />&nbsp;</b>
+          <b><asp:Label ID="Label1" runat="server" ForeColor="#CC6633" Text="Iref./Sub Item Weight [Kg] :" />&nbsp;</b>
         </td>
         <td>
           <asp:Label ID="Label2"

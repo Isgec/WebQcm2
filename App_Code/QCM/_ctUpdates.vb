@@ -6,66 +6,9 @@ Imports System.ComponentModel
 Namespace SIS.CT
   Public Class ctUpdates
     Public Shared Sub CT_ManualQCRequest(ByVal pp As SIS.QCM.qcmRequests)
-      Dim errMsg As String = ""
       Dim hndl As String = "CT_INSPECTIONCALLRAISED"
-      '1. Insert In tpisg229
-      Dim ct229 As New SIS.TPISG.tpisg229
-      With ct229
-        .t_trdt = Now.ToString("dd/MM/yyyy HH:mm:ss")
-        .t_bohd = hndl
-        .t_indv = pp.RequestID & "_" & pp.OrderNo
-        .t_srno = 1
-        .t_proj = pp.ProjectID
-        .t_elem = ""
-        .t_user = HttpContext.Current.Session("LoginID")
-        .t_stat = ""
-        .t_Refcntd = 0
-        .t_Refcntu = 0
-      End With
-      ct229 = SIS.TPISG.tpisg229.InsertData(ct229)
-      '2. Insert In tpisg230
-      Dim DSrn As Integer = 0
-      Dim PODocs As List(Of SIS.DOCS.Document) = SIS.DOCS.Document.DocumentsSelectList(pp.OrderNo)
-      If PODocs.Count > 0 Then
-        For Each PODoc As SIS.DOCS.Document In PODocs
-          DSrn += 1
-          Dim ct230 As New SIS.TPISG.tpisg230
-          With ct230
-            .t_trdt = ct229.t_trdt
-            .t_bohd = hndl
-            .t_indv = pp.RequestID & "_" & pp.OrderNo
-            .t_srno = 1
-            .t_dsno = DSrn
-            .t_dwno = PODoc.t_docn
-            .t_elem = ""
-            .t_proj = pp.ProjectID
-            .t_wght = 0
-            .t_pitc = 0
-            .t_stat = ""
-            .t_atcd = ""
-            .t_scup = 0
-            .t_acdt = "01/01/1753"
-            .t_acfh = "01/01/1753"
-            .t_pper = 0
-            .t_lupd = "01/01/1753"
-            .t_Refcntd = 0
-            .t_Refcntu = 0
-            .t_numo = 0
-            .t_numq = 0
-            .t_numt = 0
-            .t_numv = 0
-            .t_nutc = 0
-            .t_cuni = ""
-            .t_iref = ""
-            .t_quan = 0
-            .t_iuom = ""
-          End With
-          ct230 = SIS.TPISG.tpisg230.InsertData(ct230)
-        Next
-      End If
-      '4. Calculate Progress %
-      '4.1 Get PO IREFs
-      Dim POIrefs As List(Of SIS.QCMCT.qcmctRequest) = SIS.QCMCT.qcmctRequest.UZ_qcmctRequestSelectList(0, 999, "", False, "", pp.RequestID)
+      Dim trdt As String = Now.ToString("dd/MM/yyyy HH:mm:ss")
+      Dim POIrefs As List(Of SIS.QCMCT.qcmctRequest) = SIS.QCMCT.qcmctRequest.UZ_qcmctRequestSelectList(0, 99999, "", False, "", pp.RequestID)
       For Each iref As SIS.QCMCT.qcmctRequest In POIrefs
         Select Case iref.InspectionStageiD
           Case "2", "3"
@@ -78,7 +21,7 @@ Namespace SIS.CT
         Dim tmp As New SIS.TPISG.tpisg207
         With tmp
           .t_bohd = hndl
-          .t_date = ct229.t_trdt
+          .t_date = trdt
           .t_inid = pp.RequestID
           .t_iref = iref.ItemReference
           .t_mode = 1  '=>Manual, 2=>Packing List
@@ -92,71 +35,10 @@ Namespace SIS.CT
         End With
         SIS.TPISG.tpisg207.InsertData(tmp)
       Next
-      If errMsg <> "" Then
-        Throw New Exception(errMsg)
-      End If
     End Sub
     Public Shared Sub CT_InspectedInBlackCondition(ByVal pp As SIS.QCM.qcmRequests)
-      Dim errMsg As String = ""
       Dim hndl As String = "CT_INSPECTIONBLACKCONDITION"
       Dim trdt As String = Now.ToString("dd/MM/yyyy HH:mm:ss")
-      '1. Insert In tpisg229
-      Dim ct229 As New SIS.TPISG.tpisg229
-      With ct229
-        .t_trdt = trdt
-        .t_bohd = hndl
-        .t_indv = pp.RequestID & "_" & pp.OrderNo
-        .t_srno = 1
-        .t_proj = pp.ProjectID
-        .t_elem = ""
-        .t_user = HttpContext.Current.Session("LoginID")
-        .t_stat = ""
-        .t_Refcntd = 0
-        .t_Refcntu = 0
-      End With
-      ct229 = SIS.TPISG.tpisg229.InsertData(ct229)
-      '2. Insert In tpisg230
-      Dim DSrn As Integer = 0
-      Dim PODocs As List(Of SIS.DOCS.Document) = SIS.DOCS.Document.DocumentsSelectList(pp.OrderNo)
-      If PODocs.Count > 0 Then
-        For Each PODoc As SIS.DOCS.Document In PODocs
-          DSrn += 1
-          Dim ct230 As New SIS.TPISG.tpisg230
-          With ct230
-            .t_trdt = trdt
-            .t_bohd = hndl
-            .t_indv = pp.RequestID & "_" & pp.OrderNo
-            .t_srno = 1
-            .t_dsno = DSrn
-            .t_dwno = PODoc.t_docn
-            .t_elem = ""
-            .t_proj = pp.ProjectID
-            .t_wght = 0
-            .t_pitc = 0
-            .t_stat = ""
-            .t_atcd = ""
-            .t_scup = 0
-            .t_acdt = "01/01/1753"
-            .t_acfh = "01/01/1753"
-            .t_pper = 0
-            .t_lupd = "01/01/1753"
-            .t_Refcntd = 0
-            .t_Refcntu = 0
-            .t_numo = 0
-            .t_numq = 0
-            .t_numt = 0
-            .t_numv = 0
-            .t_nutc = 0
-            .t_cuni = ""
-            .t_iref = ""
-            .t_quan = 0
-            .t_iuom = ""
-          End With
-          ct230 = SIS.TPISG.tpisg230.InsertData(ct230)
-        Next
-      End If
-      '4. Calculate Progress %
-      '4.1 Get PO IREFs
       'First Check Offered QC List Available or NOT
       Dim OfferedListFound As Boolean = False
       Dim qcDs As List(Of SIS.PAK.pakQCListDIRef) = SIS.PAK.pakQCListDIRef.GetOfferedQCListDIref(pp.RequestID)
@@ -172,7 +54,11 @@ Namespace SIS.CT
           .t_iref = qcD.ItemReference
           .t_mode = 2  '=>Manual, 2=>Packing List
           .t_pono = pp.OrderNo
-          .t_prpo = qcD.ProgressPercent
+          If SelfEngineered(pp.ProjectID, qcD.ItemReference) Then
+            .t_prpo = qcD.ProgressPercent
+          Else
+            .t_prpo = qcD.ProgressPercentByQuantity
+          End If
           .t_powt = qcD.TotalWeight
           .t_Refcntd = 0
           .t_Refcntu = 0
@@ -183,7 +69,7 @@ Namespace SIS.CT
       Next
 
       If Not OfferedListFound Then
-        Dim POIrefs As List(Of SIS.QCMCT.qcmctRequest) = SIS.QCMCT.qcmctRequest.UZ_qcmctRequestSelectList(0, 999, "", False, "", pp.RequestID)
+        Dim POIrefs As List(Of SIS.QCMCT.qcmctRequest) = SIS.QCMCT.qcmctRequest.UZ_qcmctRequestSelectList(0, 99999, "", False, "", pp.RequestID)
         For Each iref As SIS.QCMCT.qcmctRequest In POIrefs
           Select Case iref.InspectionStageiD
             Case "2", "3"
@@ -211,10 +97,35 @@ Namespace SIS.CT
           SIS.TPISG.tpisg207.InsertData(tmp)
         Next
       End If
-      If errMsg <> "" Then
-        Throw New Exception(errMsg)
-      End If
     End Sub
+    Public Shared Function SelfEngineered(ByVal Project As String, ByVal ItemReference As String) As Boolean
+      Dim Sql As String = ""
+      Sql &= " select t_icls "
+      Sql &= " from ttpisg239200 "
+      Sql &= " where  "
+      Sql &= " t_cprj='" & Project & "'"
+      Sql &= " and t_iref='" & ItemReference & "'"
+      Dim mRet As Boolean = False
+      Using Con As SqlConnection = New SqlConnection(SIS.SYS.SQLDatabase.DBCommon.GetBaaNConnectionString())
+        Using Cmd As SqlCommand = Con.CreateCommand()
+          Cmd.CommandType = CommandType.Text
+          Cmd.CommandText = Sql
+          Con.Open()
+          Dim tmpX As String = Cmd.ExecuteScalar
+          Try
+            Select Case tmpX
+              Case "1", "3" '1=>Boughtout, 3=>Package
+                mRet = False
+              Case "4" 'Self Engineered
+                mRet = True
+            End Select
+          Catch ex As Exception
+            Throw New Exception("Item Reference Type B/S/P not defined in tpisg239")
+          End Try
+        End Using
+      End Using
+      Return mRet
+    End Function
 
   End Class
 End Namespace

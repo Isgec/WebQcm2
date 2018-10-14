@@ -44,10 +44,10 @@ Namespace SIS.CT
             .t_stat = ""
             .t_atcd = ""
             .t_scup = 0
-            .t_acdt = "01/01/1753"
-            .t_acfh = "01/01/1753"
+            .t_acdt = "01/01/1970"
+            .t_acfh = "01/01/1970"
             .t_pper = 0
-            .t_lupd = "01/01/1753"
+            .t_lupd = "01/01/1970"
             .t_Refcntd = 0
             .t_Refcntu = 0
             .t_numo = 0
@@ -127,10 +127,10 @@ Namespace SIS.CT
     '        .t_stat = ""
     '        .t_atcd = ""
     '        .t_scup = 0
-    '        .t_acdt = "01/01/1753"
-    '        .t_acfh = "01/01/1753"
+    '        .t_acdt = "01/01/1970"
+    '        .t_acfh = "01/01/1970"
     '        .t_pper = 0
-    '        .t_lupd = "01/01/1753"
+    '        .t_lupd = "01/01/1970"
     '        .t_Refcntd = 0
     '        .t_Refcntu = 0
     '        .t_numo = 0

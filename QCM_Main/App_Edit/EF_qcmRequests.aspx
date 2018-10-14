@@ -457,9 +457,8 @@
       ID = "TBLqcmctRequest"
       ToolType = "lgNMGrid"
       EditUrl = "~/QCMCT_Main/App_Edit/EF_qcmctRequest.aspx"
-      AddUrl = "~/QCMCT_Main/App_Create/AF_qcmctRequest.aspx"
-      AddPostBack = "True"
       EnableExit = "false"
+      EnableAdd="False"
       ValidationGroup = "qcmctRequest"
       runat = "server" />
     <asp:UpdateProgress ID="UPGSqcmctRequest" runat="server" AssociatedUpdatePanelID="UPNLqcmctRequest" DisplayAfter="100">
@@ -494,7 +493,7 @@
           <ItemTemplate>
             <asp:Label ID="LabelActivity2Desc" runat="server" ForeColor='<%# EVal("ForeColor") %>' Text='<%# Bind("Activity2Desc") %>'></asp:Label>
           </ItemTemplate>
-          <ItemStyle CssClass="alignCenter" />
+          <ItemStyle CssClass="alignleft" />
         <HeaderStyle CssClass="alignCenter" Width="200px" />
         </asp:TemplateField>
         <asp:TemplateField HeaderText="Quantity" SortExpression="Quantity">
